@@ -28,7 +28,9 @@ class FeatureEngineer:
         """
         self.config = config or FEATURE_CONFIG
 
-    def create_temporal_features(self, df: pd.DataFrame, timestamp_col: str = "timestamp") -> pd.DataFrame:
+    def create_temporal_features(
+        self, df: pd.DataFrame, timestamp_col: str = "timestamp"
+    ) -> pd.DataFrame:
         """
         Create time-based features from timestamp.
 
@@ -47,18 +49,13 @@ class FeatureEngineer:
         df["day_of_week"] = df[timestamp_col].dt.dayofweek
         df["is_weekend"] = (df["day_of_week"] >= 5).astype(int)
         df["is_peak_hour"] = (
-            ((df["hour"] >= 9) & (df["hour"] <= 11)) |
-            ((df["hour"] >= 18) & (df["hour"] <= 21))
+            ((df["hour"] >= 9) & (df["hour"] <= 11)) | ((df["hour"] >= 18) & (df["hour"] <= 21))
         ).astype(int)
 
         return df
 
     def create_rolling_aggregates(
-        self,
-        df: pd.DataFrame,
-        group_col: str,
-        value_cols: List[str],
-        windows: List[int] = [7, 30]
+        self, df: pd.DataFrame, group_col: str, value_cols: List[str], windows: List[int] = [7, 30]
     ) -> pd.DataFrame:
         """
         Create rolling window aggregations.
@@ -111,38 +108,29 @@ class FeatureEngineer:
 
         # SINR-to-interference ratio: signal quality relative to interference
         if "sinr" in df.columns and "interference" in df.columns:
-            df["sinr_interference_ratio"] = (
-                df["sinr"] / np.maximum(df["interference"] + 0.01, 0.01)
-            )
+            df["sinr_interference_ratio"] = df["sinr"] / np.maximum(df["interference"] + 0.01, 0.01)
 
         # Load-to-utilization ratio: how load maps to resource usage
         if "load" in df.columns and "prb_utilization" in df.columns:
-            df["load_utilization_ratio"] = (
-                df["load"] / np.maximum(df["prb_utilization"], 0.01)
-            )
+            df["load_utilization_ratio"] = df["load"] / np.maximum(df["prb_utilization"], 0.01)
 
         # Throughput per user: throughput delivered per connected user
         if "throughput" in df.columns and "connected_users" in df.columns:
-            df["throughput_per_user"] = (
-                df["throughput"] / np.maximum(df["connected_users"], 1)
-            )
+            df["throughput_per_user"] = df["throughput"] / np.maximum(df["connected_users"], 1)
 
         # Network health score: composite metric for overall cell health
         if all(c in df.columns for c in ["sinr", "throughput", "latency", "interference"]):
             df["network_health_score"] = (
-                0.3 * (df["sinr"] / 25) +
-                0.3 * (df["throughput"] / 200) -
-                0.2 * (df["latency"] / 200) -
-                0.2 * df["interference"]
+                0.3 * (df["sinr"] / 25)
+                + 0.3 * (df["throughput"] / 200)
+                - 0.2 * (df["latency"] / 200)
+                - 0.2 * df["interference"]
             )
 
         return df
 
     def encode_categorical(
-        self,
-        df: pd.DataFrame,
-        categorical_cols: List[str] = None,
-        method: str = "onehot"
+        self, df: pd.DataFrame, categorical_cols: List[str] = None, method: str = "onehot"
     ) -> Tuple[pd.DataFrame, dict]:
         """
         Encode categorical features.
@@ -178,11 +166,7 @@ class FeatureEngineer:
 
         return df, encoding_map
 
-    def handle_missing_values(
-        self,
-        df: pd.DataFrame,
-        strategy: str = "mean"
-    ) -> pd.DataFrame:
+    def handle_missing_values(self, df: pd.DataFrame, strategy: str = "mean") -> pd.DataFrame:
         """
         Handle missing values.
 
@@ -211,7 +195,7 @@ class FeatureEngineer:
         df: pd.DataFrame,
         create_temporal: bool = True,
         create_interactions: bool = True,
-        encode_cats: bool = True
+        encode_cats: bool = True,
     ) -> pd.DataFrame:
         """
         Run the complete feature engineering pipeline.

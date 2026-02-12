@@ -25,7 +25,6 @@ def sample_data():
 
 
 class TestDataQuality:
-
     def test_no_missing_values(self, sample_data):
         critical_cols = ["episode_id", "step", "action", "reward"]
         for col in critical_cols:
@@ -46,7 +45,13 @@ class TestDataQuality:
         assert sample_data["step"].min() >= 0
 
     def test_categorical_values(self, sample_data):
-        expected_actions = {"increase_power", "decrease_power", "adjust_tilt", "load_balance", "no_action"}
+        expected_actions = {
+            "increase_power",
+            "decrease_power",
+            "adjust_tilt",
+            "load_balance",
+            "no_action",
+        }
         assert set(sample_data["action"].unique()).issubset(expected_actions)
 
     def test_sample_size(self, sample_data):
@@ -76,7 +81,6 @@ class TestDataQuality:
 
 
 class TestDataGenerator:
-
     def test_generator_reproducibility(self):
         gen1 = NetworkOptDataGenerator(
             seed=42,

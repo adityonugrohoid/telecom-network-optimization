@@ -57,12 +57,8 @@ class BaseModel:
             metrics["precision"] = precision_score(
                 y_test, y_pred, average="weighted", zero_division=0
             )
-            metrics["recall"] = recall_score(
-                y_test, y_pred, average="weighted", zero_division=0
-            )
-            metrics["f1"] = f1_score(
-                y_test, y_pred, average="weighted", zero_division=0
-            )
+            metrics["recall"] = recall_score(y_test, y_pred, average="weighted", zero_division=0)
+            metrics["f1"] = f1_score(y_test, y_pred, average="weighted", zero_division=0)
             if len(np.unique(y_test)) == 2:
                 y_proba = self.model.predict_proba(X_test)[:, 1]
                 metrics["roc_auc"] = roc_auc_score(y_test, y_proba)
@@ -71,8 +67,7 @@ class BaseModel:
             metrics["rmse"] = np.sqrt(metrics["mse"])
             metrics["mae"] = mean_absolute_error(y_test, y_pred)
             metrics["r2"] = 1 - (
-                np.sum((y_test - y_pred) ** 2)
-                / np.sum((y_test - y_test.mean()) ** 2)
+                np.sum((y_test - y_pred) ** 2) / np.sum((y_test - y_test.mean()) ** 2)
             )
         return metrics
 
@@ -112,12 +107,12 @@ def cross_validate_model(model, X, y, cv_folds=5, scoring="accuracy"):
 
 def print_metrics(metrics, title="Model Performance"):
     """Pretty-print evaluation metrics."""
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"{title:^50}")
-    print(f"{'='*50}")
+    print(f"{'=' * 50}")
     for metric, value in metrics.items():
         print(f"{metric:20s}: {value:8.4f}")
-    print(f"{'='*50}\n")
+    print(f"{'=' * 50}\n")
 
 
 # ---------------------------------------------------------------------------
@@ -178,9 +173,8 @@ class NetworkEnvironment:
         if done:
             next_state = np.zeros(len(self.state_columns), dtype=np.float32)
         else:
-            next_state = (
-                self.states_df.loc[self._current_idx, self.state_columns]
-                .values.astype(np.float32)
+            next_state = self.states_df.loc[self._current_idx, self.state_columns].values.astype(
+                np.float32
             )
 
         info = {"recorded_action": recorded_action, "step": self._current_idx}
@@ -238,9 +232,7 @@ class QLearningAgent:
     def discretize_state(self, state: np.ndarray) -> Tuple[int, ...]:
         """Bin a continuous state vector into discrete bucket indices."""
         if self._bin_edges is None:
-            raise RuntimeError(
-                "Bin edges not initialized. Call train() or _init_bins() first."
-            )
+            raise RuntimeError("Bin edges not initialized. Call train() or _init_bins() first.")
         discrete = []
         for dim in range(self.state_size):
             idx = int(np.digitize(state[dim], self._bin_edges[dim]) - 1)
@@ -270,13 +262,9 @@ class QLearningAgent:
         state_key = self.discretize_state(state)
         next_key = self.discretize_state(next_state)
 
-        best_next_q = max(
-            [self._get_q(next_key, a) for a in range(self.action_size)]
-        )
+        best_next_q = max([self._get_q(next_key, a) for a in range(self.action_size)])
         current_q = self._get_q(state_key, action)
-        new_q = current_q + self.lr * (
-            reward + self.gamma * best_next_q - current_q
-        )
+        new_q = current_q + self.lr * (reward + self.gamma * best_next_q - current_q)
         self.q_table[(state_key, action)] = new_q
 
     def train(
@@ -319,7 +307,7 @@ class QLearningAgent:
             if (ep + 1) % max(1, n_episodes // 10) == 0:
                 avg = np.mean(episode_rewards[-100:])
                 print(
-                    f"Episode {ep+1:>5}/{n_episodes}  |  "
+                    f"Episode {ep + 1:>5}/{n_episodes}  |  "
                     f"Avg reward (last 100): {avg:8.2f}  |  "
                     f"Epsilon: {self.epsilon:.4f}"
                 )
@@ -338,7 +326,7 @@ class QLearningAgent:
         """
         # Collect all unique state keys
         state_keys = set()
-        for (s_key, _a) in self.q_table:
+        for s_key, _a in self.q_table:
             state_keys.add(s_key)
 
         policy = {}
