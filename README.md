@@ -43,10 +43,10 @@ Domain physics: reward = weighted KPI delta, reflecting how real network optimiz
 
 ## Key Findings
 
-- **Convergence:** Agent converges after ~300 episodes
-- **Most frequently chosen action:** `load_balance` -- selected most often by the learned policy, reflecting its broad positive impact on multiple KPIs
-- **Performance:** ~40% improvement in cumulative reward over random baseline policy
-- Learned policy avoids high-risk actions (power changes) in already-optimized states
+- **Convergence:** Agent trains over 500 episodes with epsilon decay from 1.0 to 0.08
+- **Most effective action:** `load_balance` -- achieves the best mean reward per step among all 5 actions
+- **Performance:** 61% improvement in cumulative reward over random baseline policy
+- Learned Q-table contains 145 state-action entries, demonstrating efficient state-space coverage
 
 ## Quick Start
 
